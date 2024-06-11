@@ -10,7 +10,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $categories = explode(",",$_POST['categories']);
     $short_description = $_POST['short_description'];
     $long_description= $_POST['long_description'];
-
+    $currentImage = $_POST['currentImage'];
 
     include '../validations.php';
 
@@ -22,11 +22,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         try {
             require_once '../../config/connection.php';
             include '../functions.php';
-
+            $oldImagePath = "../../assets/img/$currentImage";
             $image_name = $image != "" ? uploadImage($image) : "";
+            $image != "" ? unlink($oldImagePath): "";
+
             $checkTourName = checkTourName($name);
             if($checkTourName && $checkTourName->name == $name && $checkTourName->id != $id){
-                echo json_encode("Tour with this name allready exists!");
+                echo json_encode("Destinacija sa tim nazivom vec postoji!");
                 http_response_code(409);
             }else{
 
