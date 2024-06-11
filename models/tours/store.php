@@ -9,6 +9,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $categories = explode(",",$_POST['categories']);
     $short_description = $_POST['short_description'];
     $long_description= $_POST['long_description'];
+    $limit = $_POST['limit'];
 
    
     include '../validations.php';
@@ -25,15 +26,17 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             $image_name = uploadImage($image);
             $checkTourName = checkTourName($name);
             if($checkTourName){
-                echo json_encode("Tour with this name allready exists!");
+                echo json_encode("Destinacija sa tim nazivom vec postoji");
                 http_response_code(409);
             }else{
                $connection->beginTransaction();
                insertTour($name, $short_description, $long_description, $image_name, $duration , $price, $categories);
                $connection->commit();
                echo json_encode([
-                'message' => "New tour has been added",
-                'tours' => getAllTours()
+                'message' => "Nova destinacija je dodata",
+                'tours' => getAllTours($limit),
+                'pages' => getAllToursPagination(),
+                'offset' => ADMIN_OFFSET
                ]);
                http_response_code(201);
             }
