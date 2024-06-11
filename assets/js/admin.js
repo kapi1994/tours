@@ -10,6 +10,18 @@ $(document).ready(function () {
         console.error( error );
     } );
 
+    let page = window.location.href.split("/")
+    let activePage = page[page.length - 1].split("?")
+
+    if(activePage.length == 1 || activePage[1] == "page=home"){
+        getData()
+    }else if(activePage.length == 2 && activePage[1] == 'page=destinacije'){
+        filterTourBy()
+        
+    }else if (activePage[1].split('&')[0] != 'page=dates'){
+        localStorage.clear()
+    }
+
     // categories
     $(document).on('click','.btn-edit-category',function (e) { 
         e.preventDefault();
@@ -35,7 +47,7 @@ $(document).ready(function () {
         const index = $(this).data('index')
         const status = $(this).data('status')
         const whereToPlace = `category_${index}`;
-        console.log('radi')
+      
         $.ajax({
             type: "post",
             url: "models/categories/delete.php",
@@ -54,7 +66,7 @@ $(document).ready(function () {
         const name = $('#name').val()
         const id = $('#category_id').val()
         const index = $('#category_index').val()
-
+        const whereToPlace = `category_${index}`
         let url = '' 
         let formData = new FormData()
         formData.append('name', name)
@@ -128,6 +140,7 @@ $(document).ready(function () {
         $('#category_index').val(index)
         $('#name').val(name)
     }
+        
     // posts
     $(document).on('click','.btn-edit-tour', function(e){
         e.preventDefault()
@@ -149,6 +162,7 @@ $(document).ready(function () {
 
     })
     $(document).on('click','.btn-delete-tour', function(e){
+        e.preventDefault();
         const id = $(this).data('id')
         const index = $(this).data('index')
         const status = $(this).data('status')
@@ -187,22 +201,31 @@ $(document).ready(function () {
         formData.append('name', name)
         formData.append('price', price)
         image.length > 0 ? formData.append("image", image[0]) : ''
+        console.log(image)
+       
         formData.append('duration', duration)
         formData.append('short_description', short_description)
         formData.append('long_description', long_description)
         formData.append('categories', extractValuesFromCheckboxes(categories, selectedCheckboxes))
 
+       let currentIndex = localStorage.getItem('page') != null ? localStorage.getItem('page') : 0
 
         const whereToPlace = `tour_${index}`
 
         if(id != ""){
             url = "models/tours/update.php"
             formData.append("id", id)
-        }else
+            let currentImage = document.querySelector('#tour_img').src.split('/')
+            let image_name = currentImage[currentImage.length - 1]
+            formData.append("currentImage", image_name)
+        }else{
             url = "models/tours/store.php"
+            formData.append('limit', currentIndex)
+        }
+    
+       
 
-
-        if(tourFormValidation(name, price, duration, categories, short_description, long_description, image).length == 0){
+        if(tourFormValidation(name, price, duration, categories, short_description, long_description, image,id).length == 0){
             $.ajax({
                 type: "post",
                 url: url,
@@ -214,7 +237,8 @@ $(document).ready(function () {
                     clearTourForm()
                     if(id == ""){
                         createResponseMessages('success', response.message, 'tour_response_message')
-                        printAllTours(response.tours)
+                        printAllTours(response.tours, currentIndex, response.offset)
+                        printPagination(response.pages, currentIndex,'tour-pages','tour-page')
                     }else{
                         printTourFullRow(response, index, whereToPlace)
                     }
@@ -225,6 +249,27 @@ $(document).ready(function () {
         }
       
     })
+    $(document).on('click','.tour-page',function(e){
+        e.preventDefault()
+        let limit = $(this).data("limit")
+        localStorage.setItem('page', limit)
+        filterTourBy()
+    })
+    function filterTourBy(){
+        let limit = localStorage.getItem('page') !== null ? localStorage.getItem('page') : 0    
+        $.ajax({
+            type: "get",
+            url: "models/tours/filter.php",
+            data: {limit},
+            dataType: "json",
+            success: function (response) {
+               printAllTours(response.tours, limit, response.offset)
+               printPagination(response.pages, limit, 'tour-pages','tour-page')
+            }, error:function(jqXHR,statusTxt,xhr){
+                createResponseMessages('danger', jqXHR.responseJSON, 'tour_response_message')
+            }
+        });
+    }
     function clearTourForm(){
         $('#tour_id').val('').removeAttr('value')
         $('#tour_index').val('').removeAttr('value')
@@ -239,6 +284,10 @@ $(document).ready(function () {
             $(`#${cat_id}`).prop('checked', false)
         })
         $('#image').val('')
+        let image = document.querySelector('#tour_img')
+        image.src = ''
+        image.classList.remove('img-fluid')
+        image.classList.add('d-none')
     }
     function fillTourForm(tour, index){
         const {id, name,short_description, long_description,image_path, days, price, categories} = tour
@@ -260,14 +309,19 @@ $(document).ready(function () {
                 cat_id === value ? $(`#${id}`).prop("checked", true) : ''
             })
         })
+        let image = document.querySelector('#tour_img')
+        image.src = `assets/img/${image_path}`
+        image.classList.remove('d-none')
+        image.classList.add("img-fluid")
     }
-    function printAllTours(tours){
-        let content = '', index  =0
+    function printAllTours(tours, limit = 0, offset = 0){
+        console.log(limit, offset)
+        let content = '', index = parseInt(limit) * parseInt(offset)
         tours.forEach(tour => {
             content+= printTourFullRow(tour, index)
             index++
         })
-        $('#tours').html(content)
+        document.contains(document.querySelector('#tours')) ? document.querySelector('#tours').innerHTML  = content :''
     }
     function printTourFullRow(tour, index, whereToPlace =''){
         const {id, name, days, price, created_at, updated_at, is_deleted, categories} = tour
@@ -373,11 +427,14 @@ $(document).ready(function () {
             contentType:false,
             success: function (response) {
               clearDateForm()
+              
               if(id == ""){
-                createResponseMessages('success', response.message, 'tour_response_message')
+                createResponseMessages('success', response.message, 'date_response_message')
                 printAllTourDates(response.tours)
               }
               printDateFullRow(response, index, whereToPlace)
+            },error:function(jqXHR,responseJSON,xhr){
+                createResponseMessages('danger', jqXHR.responseJSON,'date_response_message')
             }
           });
         }
@@ -391,7 +448,8 @@ $(document).ready(function () {
     function printAllTourDates(tour_data){
         let content = '', index = 0
         tour_data.forEach(tour => {
-            content+= printTourFullRow(tour, index)
+            content+= printDateFullRow  (tour, index)
+            index++
         })
         $('#dates').html(content)
     }
@@ -421,7 +479,7 @@ $(document).ready(function () {
     $(document).on("click",'.btn-read-message', function(e){
         e.preventDefault()
         const id = $(this).data('id')
-        console.log('radi')
+        
         $.ajax({
             type: "get",
             url: "models/messages/getOne.php",
@@ -441,7 +499,7 @@ $(document).ready(function () {
     })
     $(document).on('click','.message-page', function(e){
         e.preventDefault()
-        console.log('radi')
+       
         const limit = $(this).data('limit')
         $.ajax({
             type: "get",
@@ -459,7 +517,7 @@ $(document).ready(function () {
     function printAllMessages(messages, limit, offset){
         
         let content = '', index = limit * offset
-        console.log(index)
+        
         messages.forEach(message => {
             content+= printMessage(message, index)
             index++
@@ -692,6 +750,16 @@ $(document).ready(function () {
         $('#answer_index').val('').removeAttr('value')
         $('#answer').val('').removeAttr('value')
     }
+
+    function printAllAnswers(answers){
+        let content ='', index =0
+        answers.forEach(answer => {
+            content+= printAnswerFullRow(answer, index)
+            index++
+        })
+        $('#answers').html(content)
+    }
+
     function printAnswerFullRow(answer, index, whereToPlace = ''){
    
         const {id, name, created_at, updated_at, is_deleted} = answer
@@ -776,6 +844,25 @@ $(document).ready(function () {
             }
         });
     })
+    $(document).on("click",'.btn-delete-survey',function(e){
+        e.preventDefault()
+        const status = $(this).data("active")
+        const id = $(this).data('id')
+        const index = $(this).data('index')
+        const whereToPlace = `survey_${index}`
+        $.ajax({
+            type: "post",
+            url: "models/survey/delete.php",
+            data: {id, status},
+            dataType: "json",
+            success: function (response) {
+               printSurveyFullRow(response, index, whereToPlace)
+            },error:function(jqXHR, statusTxt,xhr){
+                createResponseMessages('danger', jqXHR.responseJSON, 'survey_message')
+            }
+        });
+    })
+
 
 
     function fillSurveyForm(survey, index){
@@ -801,11 +888,12 @@ $(document).ready(function () {
     function clearSurveyForm(){
         $('#survey_id').val("").removeAttr('value')
         $('#survey_index').val("").removeAttr('value')
+        $('#date').val('')
         $('#question').val(0)
-        const answers = document.querySelectorAll('input[type="answers"]:checked')
+        let answers = document.querySelectorAll('input[name="answers"]:checked')
         answers.forEach(answer => {
-            let id = answer.id
-            $(`#${id}`).prop('checked', false)
+            let answer_id = answer.id
+            $(`#${answer_id}`).prop('checked',false)
         })
     }
     function printAllSurveys(surveys){
@@ -815,10 +903,64 @@ $(document).ready(function () {
         })
         $('#surveys').html(content)
     }
-
-    // # dovrsiti
     function printSurveyFullRow(survey, index, whereToPlace =''){
+      
+        const {id,expire_date,question_id, created_at, updated_at,is_active, questionName} = survey
         
+        let content = ` <tr id="survey_${index}">
+        <th scope="row">${parseInt(index)+1}</th>
+        <td>${questionName}</td>
+        <td>${formatDate(expire_date)}</td>
+        <td>${formatDate(created_at)}</td>
+        <td>${updated_at != null ? formatDate(updated_at) : ''}</td>
+        <td><button class="btn btn-sm btn-success btn-edit-survey"
+        type="button" data-id="${id}" data-index="${index}">Edit</button></td>
+        <td>
+            <button class="btn btn-sm btn-danger btn-delete-survey"
+            type="button" data-id="${id}" data-index="${index}"
+            data-active="${is_active}">${is_active == 1 ? "Delete" : "Activate"}</button>
+        </td>
+    </tr>`
+        if(whereToPlace != ""){
+            document.querySelector(`#${whereToPlace}`).innerHTML = content
+        }
+        return content
     }
 
+
+    function getData(){
+       $.ajax({
+        type: "get",
+        url: "models/getData.php",
+        dataType: "json",
+        success: function (response) {
+           document.contains(document.querySelector('#numberOfUsers')) ? document.querySelector('#numberOfUsers')
+            .innerHTML = response.numberOfUsers.numberOfUsers : ''
+           document.contains(document.querySelector('#numberOfTours')) ? document.querySelector('#numberOfTours')
+            .innerHTML = response.numberOfTours.numberOfTours : ''
+            printMostVisitedTours(response.mostVisitedTours)
+        },error:function(jqXHR,statusTxt,xhr){
+            createResponseMessages('danger', jqXHR.responseJSON, 'home_message')
+        }
+       });
+    }
+    function printMostVisitedTours(mostVisitedTours){
+        let content ='',index = 0
+        mostVisitedTours.forEach(tour => {
+            content+= printVisitedTour(tour, index)
+            index++
+        })
+        $('#reservations').html(content)
+    }
+    function printVisitedTour(tour, index){
+        const {mostVisitedTours, name, date} = tour
+        return `
+            <tr>
+                <th scope='row'>${parseInt(index)  +1}</th>
+                <td>${name}</td>
+                <td>${formatDate(date)}</td>
+                <td>${mostVisitedTours}</td>
+            </tr>
+        `
+    }
 });
