@@ -26,7 +26,7 @@ function selectFormValidation(select, errorArray, errorElement, errorMessage){
 
 function inputFileValidation(image, errors, errorElement, errorMessage){
     const [imageEmptyError, imageFormatError, imageSizeError] = errorMessage
-    console.log(errorMessage)
+  
     if(image.length == 0){
         errors.push(imageEmptyError)
         createValidationMessage(errorElement, imageEmptyError)
@@ -105,7 +105,7 @@ function createResponseMessages(color, text, whereToPlace){
 }
 
 function formatDate(dateD){
-   
+   console.log(dateD)
     const date = dateD.split(" ")[0].split("-")
     const time = dateD.split(" ")[1] != null ? dateD.split(" ")[1] :''  
    
@@ -115,9 +115,22 @@ function formatDate(dateD){
 
 function printPagination(pages, limit, whereToPlace, cls){
     let content= ''
-    for(let i = 0; i<pages; i++){
-        let activeClass = parseInt(i) === parseInt(limit) ? 'active'  :''
-        content+= `<li class="page-item"><a class="${cls} page-link ${activeClass}" href="#" data-limit = "${i}">${parseInt(i)+1}</a></li>`
+
+    if(pages > 0){
+        for(let i = 0; i<pages; i++){
+           
+            let activeClass = parseInt(i) === parseInt(limit) ? 'active'  :''
+            content+= `<li class="page-item"><a class="${cls} page-link ${activeClass}" href="#" data-limit = "${i}">${parseInt(i)+1}</a></li>`
+        }
     }
     $(`#${whereToPlace}`).html(content)
+}
+
+function radioInputValidation(radio,errorArray, errorElement, errorMessage){
+    if(radio == null){
+        errorArray.push(errorMessage)
+        createValidationMessage(errorElement, errorMessage)
+    }else{
+        removeValidationMessage(errorElement)
+    }
 }
