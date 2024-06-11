@@ -17,7 +17,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
             $connection->beginTransaction();
             updateSurvey($id, $date, $question, $answers);
-            echo json_encode('povratka');
+            echo json_encode(getSurveyOneFullRow($id));
             $connection->commit();
 
         } catch (PDOException $th) {
