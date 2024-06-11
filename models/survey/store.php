@@ -20,7 +20,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
             insertSurvey($date, $question, $answers);
             $connection->commit();
             echo json_encode([  
-                'message' => "New survey has been added",
+                'message' => "Nova anketa je postavljena",
                 'surveys' => getAllSurveys()
             ]);
         } catch (PDOException $ex) {
