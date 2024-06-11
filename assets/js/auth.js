@@ -36,7 +36,7 @@ $(document).ready(function () {
                 data: {email, password},
                 dataType: "json",
                 success: function (response) {
-                console.log(response)
+              
                   response == 1 ? window.location.href='admin.php' : window.location.href='index.php'
                 },error:function(jqXHR, statusTxt, xhr){
                     createResponseMessages('danger', jqXHR.responseJSON, 'login_response_message')
