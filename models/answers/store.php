@@ -12,12 +12,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             include '../functions.php';
             $checkAnswers = checkAnswers($option);
             if($checkAnswers){
-                echo json_encode("Same option allready exists!");
+                echo json_encode("Takav odgovor vec postoji");
                 http_response_code(409);
             }else{
                 insertNewOption($option);
                 echo json_encode([
-                    'message' => "New option has been inserted",
+                    'message' => "Novi odgovor je dodat",
                     'options' => getAllAnswers()
                 ]);
             }
