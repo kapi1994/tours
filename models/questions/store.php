@@ -13,13 +13,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             include '../functions.php';
             $checkQuestion = checkQuestion($name);
             if($checkQuestion){
-                echo json_encode("Question allready exsits");
+                echo json_encode("Takvo pitanje vec postoji");
                 http_response_code(409);
             }else{
                 insertQuestion($name);
                 echo json_encode([
                     'questions' => getAllQuestions(),
-                    'message' => 'New question has been inserted'
+                    'message' => 'Novo pitanje je kreirano'
                 ]);
             }
         } catch (PDOException $th) {
