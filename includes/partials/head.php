@@ -3,8 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>
+        <?= isset($_GET['page']) ? ucfirst($_GET['page']) :'Pocetna'; ?>
+    </title>
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+   
+    <meta name="description" content="Find the best adventure">
+    <meta name="keywords" content="Hiking, Cicling, Kayaking">
+    
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
