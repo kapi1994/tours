@@ -17,11 +17,11 @@
             include '../functions.php';
 
             if(checkEmail($email)){
-                echo json_encode("Email is allready userd");
+                echo json_encode("Takav email je vec u upotrebi");
                 http_response_code(409);
             }else{
                 createNewAccount($first_name, $last_name, $email, $password);
-                echo json_encode("New account has been created");
+                echo json_encode("Novi nalog je kreiran");
                 http_response_code(201);
             }
         } catch (PDOException $th) {
