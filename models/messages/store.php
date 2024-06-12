@@ -16,7 +16,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
             require_once '../../config/connection.php';
             include '../functions.php';
             storeNewMessage($first_name, $last_name, $email, $message);
-            echo json_encode("Thank you for contacting us");
+            echo json_encode("Hvala sto ste nas kontaktirali");
         } catch (PDOException $th) {
            echo json_encode($th->getMessage());
            http_response_code(500);
