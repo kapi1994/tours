@@ -1,6 +1,6 @@
 <?php 
     if(!isset($_SESSION['user']) || isset($_SESSION['user']) && $_SESSION['user']->role_id != 1)
-        header("Content-type:application/json");
+        header("Location: index.php?page=errors&code=403");
     $messages = getAllMessages();
     $messagePage = messagePagination();
 ?>
