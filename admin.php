@@ -12,19 +12,19 @@
     if(isset($_GET['page'])){
         $page = $_GET['page'];
         switch($page){
-           case 'categories':
+           case 'kategorije':
             include 'includes/pages/admin/categories.php';
             break;  
-            case 'posts':   
+            case 'destinacije':   
                 include 'includes/pages/admin/posts.php';
                 break;
             case 'dates':
                 include 'includes/pages/admin/dates.php';   
                 break;
-            case 'survey':
+            case 'ankete':
                 include 'includes/pages/admin/survey.php';
                 break;  
-            case 'messages':
+            case 'poruke':
                 include 'includes/pages/admin/messages.php';
                 break; 
             case 'home':
