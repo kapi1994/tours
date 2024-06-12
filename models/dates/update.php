@@ -16,11 +16,11 @@
                 include '../functions.php';
                 $checkDate = checkTourDate($date, $tour_id);
                 if($checkDate && $checkDate->date == $date && $checkDate->tour_id == $tour_id && $checkDate->id != $id){
-                    echo json_encode("Tour with this date allready exists");
+                    echo json_encode("Tura koja je planirana da se odrzi na taj datum vec postoji");
                     http_response_code(409);
                 }else{
-                    updateTourDate($date, $id);
-                    echo json_encode(getOneDateFullRow($id));
+                updateTourDate($date, $id);
+                echo json_encode(getOneDateFullRow($id));
                 }
 
             } catch (PDOException $th) {
