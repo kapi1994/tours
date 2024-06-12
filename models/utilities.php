@@ -68,3 +68,8 @@
         if($select == 0 || $select=="choose")
             array_push($errors, $errorMessage);
     }
+
+    function radioINputValidation($radio, &$errors, $errorMessage){
+        if($radio == null)
+        array_push($errors, $errorMessage);
+    }
