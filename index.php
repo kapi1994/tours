@@ -2,6 +2,9 @@
     session_start();
 
     require_once 'config/connection.php';
+    include 'models/functions.php';
+
+
     include 'includes/partials/head.php';
     include 'includes/partials/navigation.php';
     $page = '';
@@ -14,18 +17,26 @@
             case 'register':
                 include 'includes/pages/auth/register.php';
                 break;
-            case 'home':
+            case 'pocetna':
                 include 'includes/pages/user/home.php';
                 break;
-            case 'tours':
+            case 'destinacije':
                 include 'includes/pages/user/tours.php';
                 break;
-            case 'contact':
+            case 'kontakt':
                 include 'includes/pages/user/contact.php';
+                break;
+            case 'tour':
+                include 'includes/pages/user/tour.php';
+                break;
+            case 'autor':
+                include 'includes/pages/user/author.php';
                 break;
             default :
                 include 'includes/pages/errors.php';
                 break;     
         }
+    }else{
+        include 'includes/pages/user/home.php';
     }
     include 'includes/partials/footer.php';
