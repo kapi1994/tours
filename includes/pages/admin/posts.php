@@ -5,6 +5,7 @@ header("Location: index.php?page=errors&code=403");
 
 $categories = getAvailableCategories();
 $tours = getAllTours();
+$pagination = getAllToursPagination();
 ?>
 <main>
     <section class="container">
@@ -28,28 +29,16 @@ $tours = getAllTours();
                             </tr>
                         </thead>
                         <tbody id="tours">
-                            <?php foreach($tours as $index => $tour):
-                            ?>
-                            <tr id="tour_<?=$index?>">
-                                <th scope="row"><?=$index +1?></th>
-                                <td><?= $tour->name?></td>
-                                <td><?=$tour->price?></td>
-                                <td><?=$tour->days?></td>
-                                <td>
-                                    <?php foreach($tour->categories as $key => $cat):?>
-                                        <?= array_key_last($tour->categories) !== $key ? $cat->name.',' : $cat->name?>
-                                    <?php endforeach;?>
-                                </td>
-                                <td><a href="admin.php?page=dates&id=<?=$tour->id?>" class="btn btn-sm btn-primary">Dodaj</a></td>
-                                <td><?= date('d/m/Y H:i:s', strtotime($tour->created_at));?></td>
-                                <td><?= $tour->updated_at != null ? date('d/m/Y H:i:s') : '-'?></td>
-                                <td><button class="btn btn-sm btn-success btn-edit-tour" data-id="<?=$tour->id?>" data-index="<?=$index?>">Edit</button></td>
-                                <td><button class="btn btn-sm btn-danger btn-delete-tour" type="button" data-id="<?=$tour->id?>" 
-                                data-index="<?=$index?>" data-status="<?=$tour->is_deleted?>"><?=$tour->is_deleted == 0 ? "Delete" : "Activate"?></button></td>
-                            </tr>
-                            <?php endforeach;?>
+                            
                         </tbody>
                     </table>
+                </div>
+                <div class="d-flex justify-content-center mt-2">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination" id="tour-pages">
+                            
+                        </ul>
+                    </nav>
                 </div>
             </div>
             <div class="col-lg-4">
@@ -102,6 +91,9 @@ $tours = getAllTours();
                         <textarea name="tour_description" id="tour_description" class="form-control"></textarea>
                         <div id="tour_desciption_error"></div>
                    </div>
+                    <div class="mb-3">
+                        <img src="" alt="" id="tour_img" class="d-none">  
+                    </div>
                    <div class="d-grid gap-1">
                             <button class="btn btn-sm btn-primary" id="btnSaveTour" type="button">Save</button>
                             <button class="btn btn-sm btn-danger" id="btnResetTour" type="button">Reset</button>
