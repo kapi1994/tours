@@ -12,13 +12,13 @@ if($_SERVER['REQUEST_METHOD'] =='POST'){
             include '../functions.php';
             $checkCategoryName = checkCategoryName($name);
             if($checkCategoryName){
-                echo json_encode("Category with this name allready exists");
+                echo json_encode("Kategorija sa takvim nazivom vec postoji");
                 http_response_code(409);
             }else{
                 storeNewCategory($name);
                 echo json_encode([
                     'categories' => getAllCategories(),
-                    'message' => "New category has been inserted"
+                    'message' => "Nova kategorija je dodata"
                 ]);
             }
         } catch (PDOException $th) {
