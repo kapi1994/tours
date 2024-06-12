@@ -3,7 +3,7 @@
     if(!isset($_SESSION['user']) || isset($_SESSION['user']) && $_SESSION['user']->role_id != 1)
         header("Location: index.php?page=errors&code=403");
 
-    $id = isset($_GET['id']);
+    $id =$_GET['id'];
     $tourName = getTourName($id);
     $dates= getTourDates($id);
 
