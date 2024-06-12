@@ -15,7 +15,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
             include '../functions.php';
             $checkQuestion = checkQuestion($name);
             if($checkQuestion && $checkQuestion->name == $name && $checkQuestion->id != $id){
-                echo json_encode("This question allready exists");
+                echo json_encode("Takvo pitanje vec postoji");
                 http_response_code(409);
             }else{
                 updateQuestion($name, $id);
