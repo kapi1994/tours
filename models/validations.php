@@ -8,10 +8,10 @@ function registerFormValidation($first_name, $last_name, $email, $password){
     $reFirstLastName = "/^([A-ZÀ-ÿ][-,a-z. ']+[ ]*)+$/";
     $rePassword = "/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/";
 
-    inputValidation($errors,"First name isn't valid",$first_name, $reFirstLastName);
-    inputValidation($errors,"Last name isn't valid",$last_name, $reFirstLastName);
-    inputValidation($errors,"Email isn't valid", $email);
-    inputValidation($errors,"Password isn't valid", $password,$rePassword);
+    inputValidation($errors,"Ime nije u redu",$first_name, $reFirstLastName);
+    inputValidation($errors,"Prezime nije u redu",$last_name, $reFirstLastName);
+    inputValidation($errors,"Email nije u redu", $email);
+    inputValidation($errors,"Lozinka nije u redu", $password,$rePassword);
 
     return $errors;
 }
@@ -22,34 +22,34 @@ function loginFormValidation($email, $password){
 
     $rePassword = "/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/";
 
-    inputValidation($errors, "Email isn't valid", $email);
-    inputValidation($errors,"Password isn't valid", $password,$rePassword);
+    inputValidation($errors, "Email nije validan", $email);
+    inputValidation($errors,"Lozinka nije validna", $password,$rePassword);
 
     return $errors;
 }
 
 function categoryFormValidation($name){
     $errors = [];
-    $reName = "/^[A-Z][a-z]{3,}$/";
-    inputValidation($errors,"Name isn't valid", $name, $reName);
+    $reName = "/[A-Z][\w\s\-,.!?']+/";
+    inputValidation($errors,"Naziv nije u redu", $name, $reName);
     return $errors;
 }
 
 function tourFormValidation($name, $price, $duration, $categories, $shortDescription, $longDescription, $image= ""){
     $errors = [];
 
-    $reName = "/^[A-Z][a-z]{1,}$/";
+    $reName = "/[A-Z][\w\s\-,.!?']+/";
     $rePrice = "/^[1-9][\d]{2,}$/";
     $reDuration = "/^[1-9]([\d]{1,})*$/";
 
-    inputValidation($errors, "Name isn't valid", $name, $reName);
-    inputValidation($errors, "Price isn't valid", $price, $rePrice);
-    checkBoxValidation($categories, $errors, "Pick at least category");
-    $image != "" ?   imageFileValidation($image, $errors, ["Image can't be empty", "Image file isn't ok","Image must be less than 3mb"]) : "";
-    inputValidation($errors, "Duraction isn't valid", $duration, $reDuration);
-    inputValidation($errors, "Short duration isn't valid", $shortDescription, $reName);
+    inputValidation($errors, "Naziv nije u redu", $name, $reName);
+    inputValidation($errors, "Cena nije u redu", $price, $rePrice);
+    checkBoxValidation($categories, $errors, "Morate odabrati barem jednu kategoriju");
+    $image != "" ?   imageFileValidation($image, $errors, ["Morate odabrati sliku", "Tip slike nije u redu","Velicina slikemora biti manja od 3mb"]) : "";
+    inputValidation($errors, "Period tranajanja nije u redu", $duration, $reDuration);
+    inputValidation($errors, "Opis nije u redu", $shortDescription, $reName);
     if(strlen($longDescription) == 0){
-        array_push($errors, "Long description isn't valid");
+        array_push($errors, "Opis nije u redu");
     }
 
     return $errors;
@@ -58,7 +58,7 @@ function tourFormValidation($name, $price, $duration, $categories, $shortDescrip
 function dateFormValidation($date){
     $errors = [];
 
-    validateInputDate($date, $errors, ["Date can't be empty", "Invalid date"]);
+    validateInputDate($date, $errors, ["Morate odabrati datum", "Datum nije validan"]);
 
     return $errors;
 }
@@ -67,34 +67,46 @@ function contactFormValidation($first_name, $last_name, $email, $message){
     $errors = [];
 
     $reFirstLastName = "/^([A-ZÀ-ÿ][-,a-z. ']+[ ]*)+$/";
-    $reMessage = "/^[A-Z][a-z]{3,}$/";
+    $reMessage = "/[A-Z][\w\s\-,.!?']+/";
 
-    inputValidation($errors, "Fisrt name isn't valid", $first_name, $reFirstLastName);
-    inputValidation($errors, "Last name isn't valid", $last_name, $reFirstLastName);
-    inputValidation($errors, "", $email);
-    inputValidation($errors, "Message isn't valid", $message, $reMessage);
+    inputValidation($errors, "Ime nije u redu", $first_name, $reFirstLastName);
+    inputValidation($errors, "Prezime nije u redu", $last_name, $reFirstLastName);
+    inputValidation($errors, "Email nije validan", $email);
+    inputValidation($errors, "Poruka nije u redu", $message, $reMessage);
 
     return $errors;
 }
 
 function questionFormValidation($name){
     $errors = [];
-    $reName = "/^([A-ZÀ-ÿ][-,a-z. ']+[ ]*)+$/";
-    inputValidation($errors, "Question isn't valid", $name, $reName);
+    $reName = "/[A-Z][\w\s\-,.!?']+/";
+    inputValidation($errors, "Pitanje nije validno", $name, $reName);
     return $errors;
 }
 
 function optionFormValidation($name){
     $errors = [];
-    $reName = "/^([A-ZÀ-ÿ][-,a-z. ']+[ ]*)+$/";
-    inputValidation($errors, "Question isn't valid", $name, $reName);
+    $reName = "/[A-Z][\w\s\-,.!?']+/";
+    inputValidation($errors, "Odgovor nije validan", $name, $reName);
     return $errors;
 }
 
 function surveyFormValidation($date, $question, $answers){
     $errors = [];
-    validateInputDate($date, $errors, ["Pick a date", "Invalid date"]);
-    validateInputSelect($question, $errors, "Pick a question");
-    checkBoxValidation($answers, $errors, "Pick a least one answer");
+    validateInputDate($date, $errors, ["Morate odabrati datum", "Datum nije validan"]);
+    validateInputSelect($question, $errors, "Odaberite pitanje");
+    checkBoxValidation($answers, $errors, "Morate odabrati barem jedan odgovor");
+    return $errors;
+}
+
+function tourFormResValidation($date){
+    $errors = [];
+    validateInputSelect($date, $errors, "Morate odabrati datum polaska");
+    return $errors;
+}
+
+function surveyVoteValidation($vote){
+    $errors= [];
+    radioINputValidation($vote, $errors, "Odaberite jednu od opcija");
     return $errors;
 }
