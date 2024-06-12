@@ -16,13 +16,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
             $checkDate = checkTourDate($date, $tour_id);
             if($checkDate){
-                echo json_encode("Allready have date at that time");
+                echo json_encode("Tura koja je planirana da se odrzi na taj datum vec postoji");
                 http_response_code(409);
             }else{
                 insertTourDate($date, $tour_id);
                 echo json_encode([
                     'tours' => getTourDates($tour_id),
-                    'message' => 'New tour has been added'
+                    'message' => 'Novi termin je dodat'
                 ]);
             }
         } catch (PDOException $th) {
