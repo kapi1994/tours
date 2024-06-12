@@ -1,31 +1,26 @@
 <?php 
 $homeUrl = "";
 $navigation = "";
+$route = '';
   if(!isset($_SESSION['user']) || isset($_SESSION['user']) && $_SESSION['user']->role_id == 2){
     $homeUrl = "index.php";
+    $navigation = getUserMenu();
   }else if(isset($_SESSION['user']) && $_SESSION['user']->role_id == 1){
     $homeUrl = "admin.php";
+    $navigation = getAdminMenu();
   }
 ?>
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container">
-    <a class="navbar-brand" href="<?=$homeUrl?>">Navbar</a>
+    <a class="navbar-brand fw-bold text-uppercase" href="<?=$homeUrl?>">Avanturista</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-      <?php if(!isset($_SESSION['user']) || isset($_SESSION['user']) && $_SESSION['user']->role_id == 2):?>
-        <li class="nav-item"><a href="index.php?page=home" class="nav-link <?= isset($_GET['page']) && $_GET['page'] == 'home' ? 'active border-bottom' : ''?>">Home</a></li>
-        <li class="nav-item"><a href="index.php?page=tours" class="nav-link <?= isset($_GET['page']) && $_GET['page'] == 'tours' ? 'active border-bottom' : ''?>">Torus</a></li>
-        <li class="nav-item"><a href="index.php?page=contact" class="nav-link <?= isset($_GET['page']) && $_GET['page'] == 'contact' ? 'active border-bottom' : ''?>">Contact</a></li>
-        <?php elseif(isset($_SESSION['user']) && $_SESSION['user']->role_id == 1):?>
-          <li class="nav-item"><a href="admin.php?page=home" class="nav-link <?= isset($_GET['page']) && $_GET['page'] == 'home' ? 'active border-bottom' : ''?>">Home</a></li
-          <li class="nav-item"><a href="admin.php?page=survey" class="nav-link <?= isset($_GET['page']) && $_GET['page'] == 'survey' ? 'active border-bottom' : ''?>">Survey</a></li>
-          <li class="nav-item"><a href="admin.php?page=categories" class="nav-link <?= isset($_GET['page']) && $_GET['page'] == 'categories' ? 'active border-bottom' :''?>">Categories</a></li>
-          <li class="nav-item"><a href="admin.php?page=posts" class="nav-link <?= isset($_GET['page']) && $_GET['page'] == 'posts' ? 'active border-bottom' :''?>">Posts</a></li>
-          <li class="nav-item"><a href="admin.php?page=messages" class="nav-link <?= isset($_GET['page']) && $_GET['page'] == 'messages' ? 'active border-bottom' : ''?>">Messages</a></li>
-        <?php endif;?>
+      <?php foreach($navigation as $home):?>
+        <li class="nav-item"><a href="<?=$homeUrl?>?page=<?=$home->name?>" class="nav-link <?= isset($_GET['page']) && $_GET['page'] == $home->name ? 'active border-bottom' : ''?>"><?=ucfirst($home->name)?></a></li>
+      <?php endforeach;?>
       </ul>
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           <?php if(!isset($_SESSION['user'])):?>
