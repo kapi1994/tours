@@ -16,7 +16,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
            include '../functions.php';
 
             if(!checkEmail($email)){
-                echo json_encode("Account with this email don't exists");
+                echo json_encode("Nalog sa ovim email-om nepostoji");
                 http_response_code(401);
             }else{
                
@@ -25,7 +25,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     $_SESSION['user'] = $checkAccount;
                     echo json_encode($checkAccount->role_id);
                 }else{
-                    echo json_encode("Your credentials aren't ok");
+                    echo json_encode("Vasi kredencijali nisu u redu! Pokusajte ponovo");
                     http_response_code(401);
                 }
             }
